@@ -116,6 +116,7 @@ public function confirmOrder(Request $request)
                     'meja_id'  => $meja_id,
                     'jumlah'   => $item->jumlah,
                     'status'   => 'menunggu',
+                    'catatan'  => $item->catatan,
                 ]);
 
                 // Broadcast event PesananMasuk untuk pesanan baru ini

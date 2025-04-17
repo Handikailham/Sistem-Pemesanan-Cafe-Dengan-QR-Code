@@ -1,14 +1,12 @@
 <?php
-
 namespace App\Events;
 
 use App\Models\Dapur;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 class PesananMasuk implements ShouldBroadcast
 {
@@ -18,19 +16,28 @@ class PesananMasuk implements ShouldBroadcast
 
     public function __construct(Dapur $pesanan)
     {
-        // Memastikan relasi 'menu' dan 'meja' sudah termuat
-        $this->pesanan = $pesanan->load('menu', 'meja');
-        Log::info('Event PesananMasuk dikirim', ['pesanan' => $pesanan]);
+        // load relasi
+        $this->pesanan = $pesanan->load('menu','meja');
     }
 
     public function broadcastOn()
     {
-        // Broadcast ke channel "dapur"
         return new Channel('dapur');
     }
 
     public function broadcastAs()
     {
         return 'pesanan.masuk';
+    }
+
+    /**
+     * Override payload agar include relasi.
+     */
+    public function broadcastWith()
+    {
+        return [
+            // kita bungkus lagi ke dalam key 'pesanan'
+            'pesanan' => $this->pesanan->toArray(),
+        ];
     }
 }
