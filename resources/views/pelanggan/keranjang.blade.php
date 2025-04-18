@@ -17,7 +17,6 @@
             <div class="space-x-4">
                 <a href="{{ route('pesan.index', $meja->nomor) }}" class="text-gray-700 hover:text-blue-600 font-medium">Pesan</a>
                 <a href="{{ route('keranjang.index', ['nomor_meja' => $meja->nomor]) }}" class="text-gray-700 hover:text-blue-600 font-medium">Keranjang</a>
-                <a href="{{ route('pesan.status', $meja->nomor) }}" class="text-gray-700 hover:text-blue-600 font-medium">Status</a>
             </div>
         </div>
     </nav>

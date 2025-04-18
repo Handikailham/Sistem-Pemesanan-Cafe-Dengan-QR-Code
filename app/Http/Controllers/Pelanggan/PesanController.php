@@ -17,12 +17,34 @@ use App\Http\Controllers\Controller;
 
 class PesanController extends Controller
 {
-    public function index($nomor_meja)
-    {
-        $meja = Meja::where('nomor', $nomor_meja)->firstOrFail();
-        $menu = Menu::all();
-        return view('pelanggan.pesan', compact('meja', 'menu'));
-    }
+    // app/Http/Controllers/Pelanggan/PesanController.php
+public function index($nomor_meja)
+{
+    $meja = Meja::where('nomor', $nomor_meja)->firstOrFail();
+    $menu = Menu::all();
+
+    // Ambil isi keranjang dan hitung total item + total harga
+    $keranjangItems = Keranjang::with('menu')
+        ->where('meja_id', $meja->id)
+        ->get();
+
+    $cartCount = $keranjangItems->sum('jumlah');
+    $cartTotal = $keranjangItems->sum(function($item) {
+        return $item->jumlah * $item->menu->harga;
+    });
+
+    // Cek order pending untuk meja ini
+    $orderPending = Order::where('meja_id', $meja->id)
+                         ->where('status', 'pending')
+                         ->first();
+
+    return view('pelanggan.pesan', compact(
+        'meja', 'menu',
+        'keranjangItems', 'cartCount', 'cartTotal',
+        'orderPending'
+    ));
+}
+
 
     public function addToKeranjang(Request $request)
     {
@@ -141,7 +163,7 @@ public function closeBill(Request $request)
 {
     $meja_id = $request->input('meja_id');
 
-    // Cari order pending untuk meja tersebut
+    // Cari order pending
     $order = Order::where('meja_id', $meja_id)
                   ->where('status', 'pending')
                   ->first();
@@ -150,11 +172,9 @@ public function closeBill(Request $request)
         return redirect()->back()->with('error', 'Order tidak ditemukan atau sudah ditutup.');
     }
 
-    // Tutup order dengan mengganti status menjadi closed
-    $order->status = 'closed';
-    $order->save();
-
-    return redirect()->route('transaksi.create', ['order_id' => $order->id]);
+    // **Jangan tutup di sini.** 
+    // Cukup redirect ke form transaksi (bayar di kasir).
+    return redirect()->route('pesan.transaksi', ['order_id' => $order->id]);
 }
 
 
@@ -182,39 +202,39 @@ public function closeBill(Request $request)
     }
 
     public function showTransaksi($order_id)
-    {
-        $order = Order::with('orderDetails.menu')->findOrFail($order_id);
-        $transaksi = Transaksi::where('order_id', $order_id)->first();
-        return view('transaksi.form', compact('order', 'transaksi'));
+{
+    // Ambil order beserta detail & relasi meja
+    $order = Order::with('orderDetails.menu', 'meja')->findOrFail($order_id);
+
+    // Cek apakah Transaksi untuk order ini sudah dibuat
+    $transaksi = Transaksi::where('order_id', $order_id)->first();
+
+    if ($transaksi) {
+        // Sudah bayar → tampilkan kode pembayaran
+        return view('transaksi.show', compact('transaksi'));
     }
 
-    public function storeTransaksi(Request $request)
-    {
-        $request->validate([
-            'order_id'           => 'required|exists:orders,id',
-            'nama'               => 'required',
-            'no_hp'              => 'required',
-            'email'              => 'nullable|email',
-            'metode_pembayaran'  => 'required|in:online,kasir',
-        ]);
+    // Belum bayar → tampilkan form create
+    return view('transaksi.create', compact('order'));
+}
 
-        // Generate kode pembayaran
-        $kode_pembayaran = strtoupper(Str::random(8));
 
-        // Membuat transaksi baru
-        $transaksi = Transaksi::create([
-            'order_id'          => $request->order_id,
-            'nama'              => $request->nama,
-            'no_hp'             => $request->no_hp,
-            'email'             => $request->email,
-            'metode_pembayaran' => $request->metode_pembayaran,
-            'kode_pembayaran'   => $kode_pembayaran,
-            'status'            => 'belum_bayar',
-        ]);
+public function storeTransaksi(Request $request)
+{
+    $data = $request->validate([
+        'order_id'          => 'required|exists:orders,id',
+        'metode_pembayaran' => 'required|in:online,kasir',
+    ]);
 
-        $order = Order::with('meja')->findOrFail($request->order_id);
-        return view('transaksi.form', compact('order', 'transaksi'));
-    }
+    // Generate dan simpan
+    $data['kode_pembayaran']   = strtoupper(Str::random(8));
+    $data['status']            = 'belum_bayar';
+    $transaksi = Transaksi::create($data);
+
+    // Redirect ke GET /transaksi/{order_id}
+    return redirect()->route('pesan.transaksi', ['order_id' => $data['order_id']]);
+}
+
 
     public function remove($id)
     {

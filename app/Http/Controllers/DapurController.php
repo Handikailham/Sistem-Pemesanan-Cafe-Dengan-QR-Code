@@ -8,13 +8,23 @@ class DapurController extends Controller
 {
     public function index()
 {
-    $pesanan = Dapur::with(['menu', 'meja'])
-        ->orderBy('created_at', 'desc')
+    $pesananPerMeja = Dapur::with(['menu', 'meja'])
+        ->orderBy('created_at', 'asc')
         ->get()
-        ->groupBy('meja.nomor'); // Kelompokkan berdasarkan nomor meja
+        ->groupBy('meja.nomor')
+        ->map(function ($items, $mejaNomor) {
+            return [
+                'meja' => $mejaNomor,
+                'pesanan' => $items,
+                'waktu_masuk' => $items->first()->created_at
+            ];
+        })
+        ->sortBy('waktu_masuk')
+        ->values();
 
-    return view('dapur.index', compact('pesanan'));
+    return view('dapur.index', ['pesanan' => $pesananPerMeja]);
 }
+
 
 public function prosesMeja($nomorMeja)
 {

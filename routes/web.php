@@ -6,8 +6,10 @@ use App\Http\Controllers\KasirController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\Admin\MejaController;
 use App\Http\Controllers\Admin\MenuController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Pelanggan\PesanController;
+use App\Http\Controllers\Admin\AdminTransaksiController;
 
 // Route untuk login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -19,11 +21,13 @@ Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Route untuk admin (hanya bisa diakses oleh pengguna yang sudah login dan memiliki role admin)
 Route::prefix('admin')->name('admin.')->middleware(['check.admin'])->group(function () {
+    Route::get('/', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
+
     Route::get('meja', [MejaController::class, 'index'])->name('meja.index');
     Route::get('meja/create', [MejaController::class, 'create'])->name('meja.create');
     Route::post('meja', [MejaController::class, 'store'])->name('meja.store');
-    Route::get('meja/{id}/edit', [MejaController::class, 'edit'])->name('meja.edit');
-    Route::put('meja/{id}', [MejaController::class, 'update'])->name('meja.update');
     Route::delete('meja/{id}', [MejaController::class, 'destroy'])->name('meja.destroy');
 
     Route::get('menu', [MenuController::class, 'index'])->name('menu.index');
@@ -32,6 +36,16 @@ Route::prefix('admin')->name('admin.')->middleware(['check.admin'])->group(funct
     Route::get('menu/{id}/edit', [MenuController::class, 'edit'])->name('menu.edit');
     Route::put('menu/{id}', [MenuController::class, 'update'])->name('menu.update');
     Route::delete('menu/{id}', [MenuController::class, 'destroy'])->name('menu.destroy');
+
+    Route::get('user',            [UserController::class, 'index'])->name('user.index');
+Route::get('user/create',     [UserController::class, 'create'])->name('user.create');
+Route::post('user',           [UserController::class, 'store'])->name('user.store');
+Route::get('user/{id}/edit',  [UserController::class, 'edit'])->name('user.edit');
+Route::put('user/{id}',       [UserController::class, 'update'])->name('user.update');
+Route::delete('user/{id}',    [UserController::class, 'destroy'])->name('user.destroy');
+
+Route::get('transaksi', [AdminTransaksiController::class, 'index'])->name('transaksi.index');
+
 });
 
 
@@ -68,7 +82,7 @@ Route::post('/keranjang/remove/{id}', [PesanController::class, 'remove'])->name(
 
 
 // route untuk status pesanan
-Route::get('pesan/{nomor_meja}/status',[PesanController::class, 'status'])->name('pesan.status');
+
 
 Route::post('/pesan/close-bill', [PesanController::class, 'closeBill'])->name('pesan.closeBill');
 

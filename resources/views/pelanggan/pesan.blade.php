@@ -16,7 +16,7 @@
             <div class="space-x-4">
                 <a href="{{ route('pesan.index', $meja->nomor) }}" class="text-gray-700 hover:text-blue-600 font-medium">Pesan</a>
                 <a href="{{ route('keranjang.index', ['nomor_meja' => $meja->nomor]) }}" class="text-gray-700 hover:text-blue-600 font-medium">Keranjang</a>
-                <a href="{{ route('pesan.status', $meja->nomor) }}" class="text-gray-700 hover:text-blue-600 font-medium">Status</a>
+                
             </div>
         </div>
     </nav>
@@ -61,34 +61,45 @@
         @endif
     </div>
 
-<!-- MINI KERANJANG (Versi Tengah Bawah & Lebih Besar) -->
-<div 
-    onclick="window.location.href='{{ route('keranjang.index', ['nomor_meja' => $meja->nomor]) }}'" 
-    class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border-2 border-blue-600 shadow-xl px-6 py-4 rounded-xl z-50 cursor-pointer hover:bg-blue-50 transition-all w-[300px]">
+{{-- MINI KERANJANG ATAU CLOSE BILL --}}
+@if($cartCount > 0)
+    {{-- Kalau ada item di keranjang --}}
+    <div 
+        onclick="window.location.href='{{ route('keranjang.index', ['nomor_meja' => $meja->nomor]) }}'" 
+        class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-white border-2 border-blue-600 shadow-xl px-6 py-4 rounded-xl z-50 cursor-pointer hover:bg-blue-50 transition-all w-[300px]">
 
-    <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9v6m-4-6v6" />
-            </svg>
-            <div>
-                <p class="text-lg font-semibold text-blue-800">Keranjang: 
-                    <span class="font-bold">
-                        {{ \App\Models\Keranjang::where('meja_id', $meja->id)->sum('jumlah') }} item
-                    </span>
-                </p>
-                <p class="text-sm text-gray-700">
-                    Total: 
-                    <span class="font-bold text-green-600">
-                        Rp {{ number_format(\App\Models\Keranjang::where('meja_id', $meja->id)->get()->sum(function($item) {
-                            return $item->jumlah * $item->menu->harga;
-                        }), 0, ',', '.') }}
-                    </span>
-                </p>
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                {{-- ikon keranjang --}}
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9m-5-9v6m-4-6v6" />
+                </svg>
+                <div>
+                    <p class="text-lg font-semibold text-blue-800">
+                        Keranjang: <span class="font-bold">{{ $cartCount }} item</span>
+                    </p>
+                    <p class="text-sm text-gray-700">
+                        Total: <span class="font-bold text-green-600">
+                            Rp {{ number_format($cartTotal, 0, ',', '.') }}
+                        </span>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+@elseif($orderPending)
+    {{-- Kalau keranjang kosong tapi ada order pending: tampilkan tombol Close Bill --}}
+    <form action="{{ route('pesan.closeBill') }}" method="POST" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[300px] mt-4">
+        @csrf
+        <input type="hidden" name="meja_id" value="{{ $meja->id }}">
+        <button type="submit"
+                class="w-full bg-red-600 text-white px-6 py-3 rounded hover:bg-red-700">
+            Close Bill
+        </button>
+    </form>
+@endif
 
 
 

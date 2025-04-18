@@ -29,30 +29,33 @@ class KasirController extends Controller
 
 public function bayar(Request $request, $id)
 {
-    $transaksi = Transaksi::findOrFail($id);
-    $totalTagihan = $transaksi->order->total(); // Sesuaikan
+    $transaksi = Transaksi::with('order')->findOrFail($id);
+    $totalTagihan = $transaksi->order->total();
 
     $jumlahBayar = $request->jumlah_dibayar;
-    $kembalian = $jumlahBayar - $totalTagihan;
+    $kembalian   = $jumlahBayar - $totalTagihan;
 
     if ($kembalian < 0) {
         return back()->with('error', 'Jumlah bayar kurang dari total tagihan!');
     }
 
+    // Update transaksi
     $transaksi->update([
-        'jumlah_bayar' => $jumlahBayar,
-        'kembalian' => $kembalian,
-        'status' => 'lunas',
-        'kasir_id' => Auth::id(),
+        'jumlah_bayar'      => $jumlahBayar,
+        'kembalian'         => $kembalian,
+        'status'            => 'lunas',
+        'kasir_id'          => Auth::id(),
     ]);
 
+    // **Tutup order** setelah lunas
+    $transaksi->order->update(['status' => 'closed']);
+
     return view('kasir.sukses', [
-        'transaksi' => $transaksi,
-        'totalTagihan' => $totalTagihan,
-        'jumlah_bayar' => $jumlahBayar,
-        'kembalian' => $kembalian
+        'transaksi'     => $transaksi,
+        'totalTagihan'  => $totalTagihan,
+        'jumlah_bayar'  => $jumlahBayar,
+        'kembalian'     => $kembalian,
     ]);
-    
 }
 
 }

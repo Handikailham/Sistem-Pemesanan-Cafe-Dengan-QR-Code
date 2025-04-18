@@ -30,7 +30,7 @@
                     </small>
                 </td>
                 <td>
-                    <a href="{{ route('admin.meja.edit', $m->id) }}">Edit</a> |
+                    |
                     <form action="{{ route('admin.meja.destroy', $m->id) }}" method="POST" style="display:inline;">
                         @csrf
                         @method('DELETE')

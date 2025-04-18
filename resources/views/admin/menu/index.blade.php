@@ -14,6 +14,7 @@
             <th>Nama Menu</th>
             <th>Kategori</th>
             <th>Harga</th>
+            <th>Deskripsi</th>
             <th>Aksi</th>
         </tr>
     </thead>
@@ -31,6 +32,7 @@
                 <td>{{ $item->nama }}</td>
                 <td>{{ $item->kategori }}</td>
                 <td>Rp {{ number_format($item->harga, 0, ',', '.') }}</td>
+                <td>{{ $item->deskripsi }}</td>
                 <td>
                     <a href="{{ route('admin.menu.edit', $item->id) }}">Edit</a> |
                     <form action="{{ route('admin.menu.destroy', $item->id) }}" method="POST" style="display:inline;">
