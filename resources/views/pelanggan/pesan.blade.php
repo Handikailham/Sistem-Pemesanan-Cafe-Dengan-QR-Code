@@ -80,63 +80,48 @@
 
     {{-- KONTEN --}}
     <div class="max-w-6xl mx-auto px-4 py-8">
-      @if ($menu->isEmpty())
-          <p class="text-center text-gray-500">Tidak ada menu yang tersedia saat ini.</p>
-      @else
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              @foreach ($menu as $item)
-                  <div
-                      class="bg-white rounded-lg shadow-md transform transition
-                             hover:scale-105 hover:shadow-xl
-                             hover:ring-2 hover:ring-yellow-400 hover:ring-offset-2
-                             hover:bg-yellow-50"
-                  >
-                      <img
-                          src="{{ asset('menu/' . $item->gambar) }}"
-                          alt="{{ $item->nama }}"
-                          class="w-full h-40 object-cover rounded-t-lg"
-                      >
-  
-                      <div class="p-5 flex flex-col justify-between h-[350px]">
-                          <div>
-                              <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ $item->nama }}</h3>
-                              <p class="text-yellow-600 font-semibold mb-3">
-                                  Rp {{ number_format($item->harga, 0, ',', '.') }}
-                              </p>
-                              <p class="text-sm text-gray-600 line-clamp-3 mb-4">{{ $item->deskripsi }}</p>
-                          </div>
-  
-                          <form action="{{ route('pesan.add') }}" method="POST" class="flex flex-col">
-                              @csrf
-                              <input type="hidden" name="id" value="{{ $item->id }}">
-                              <input type="hidden" name="nomor_meja" value="{{ $meja->nomor }}">
-  
-                              <div class="flex items-center justify-between mb-3">
-                                  <label for="quantity_{{ $item->id }}" class="text-sm text-gray-700">Jumlah</label>
-                                  <input
-                                      type="number"
-                                      id="quantity_{{ $item->id }}"
-                                      name="quantity"
-                                      class="w-16 p-2 border border-gray-300 rounded-md"
-                                      min="1"
-                                      value="1"
-                                  >
-                              </div>
-  
-                              <button
-                                  type="submit"
-                                  class="w-full border border-yellow-500 text-yellow-600 py-2 rounded-lg hover:bg-yellow-100 transition"
-                              >
-                                  Tambah ke Keranjang
-                              </button>
-                          </form>
-                      </div>
-                  </div>
-              @endforeach
-          </div>
-      @endif
-  </div>
-  
+       
+    
+        @if ($menu->isEmpty())
+            <p class="text-center text-gray-500">Tidak ada menu yang tersedia saat ini.</p>
+        @else
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                @foreach ($menu as $item)
+                <div class="bg-white rounded-lg shadow-md transform transition hover:scale-105 hover:shadow-lg">
+                    <img src="{{ asset('menu/' . $item->gambar) }}" alt="{{ $item->nama }}"
+                         class="w-full h-40 object-cover rounded-t-lg">
+    
+                    <div class="p-5 flex flex-col justify-between h-[350px]">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-1">{{ $item->nama }}</h3>
+                            <p class="text-yellow-600 font-semibold mb-3">Rp {{ number_format($item->harga, 0, ',', '.') }}</p>
+                            <p class="text-sm text-gray-600 line-clamp-3 mb-4">{{ $item->deskripsi }}</p>
+                        </div>
+    
+                        <form action="{{ route('pesan.add') }}" method="POST" class="flex flex-col">
+                            @csrf
+                            <input type="hidden" name="id" value="{{ $item->id }}">
+                            <input type="hidden" name="nomor_meja" value="{{ $meja->nomor }}">
+    
+                            <div class="flex items-center justify-between mb-3">
+                                <label for="quantity_{{ $item->id }}" class="text-sm text-gray-700">Jumlah</label>
+                                <input type="number" id="quantity_{{ $item->id }}" name="quantity"
+                                       class="w-16 p-2 border border-gray-300 rounded-md"
+                                       min="1" value="1">
+                            </div>
+    
+                            <button type="submit"
+                                    class="w-full border border-yellow-500 text-yellow-600 py-2 rounded-lg hover:bg-yellow-100 transition">
+                                Tambah ke Keranjang
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+    
       
 {{-- MINI KERANJANG ATAU CLOSE BILL --}}
 @if($cartCount > 0)

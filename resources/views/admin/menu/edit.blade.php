@@ -1,126 +1,150 @@
-{{-- resources/views/admin/menu/edit.blade.php --}}
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Edit Menu — {{ $menu->nama }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {{-- Tailwind (atau CSS lain) --}}
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Menu | ScanBrew Café</title>
+
+  <!-- Tailwind CSS & Feather Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
 </head>
-<body class="bg-gray-100 p-6">
+<body class="flex h-screen bg-gray-50">
 
-    <div class="max-w-2xl mx-auto bg-white p-6 rounded shadow">
-        <h1 class="text-2xl font-bold mb-4">Edit Menu: {{ $menu->nama }}</h1>
+<!-- SIDEBAR -->
+<aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+  <div class="p-6 flex items-center space-x-2 border-b">
+    <img src="{{ asset('images/scanbrewcafe.png') }}" alt="Logo" class="w-10 h-10">
+    <span class="text-xl font-bold text-yellow-600">ScanBrew Café</span>
+  </div>
+  <nav class="flex-1 px-4 py-6 space-y-2">
+    <a href="{{ route('admin.meja.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
+      <i data-feather="grid" class="w-5 h-5 mr-3 text-yellow-500"></i> Meja
+    </a>
+    <a href="{{ route('admin.menu.index') }}" class="flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg font-medium">
+      <i data-feather="book-open" class="w-5 h-5 mr-3 text-white"></i> Menu
+    </a>
+    <a href="{{ route('admin.transaksi.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
+      <i data-feather="clipboard" class="w-5 h-5 mr-3 text-yellow-500"></i> Transaksi
+    </a>
+    <a href="{{ route('admin.user.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
+      <i data-feather="users" class="w-5 h-5 mr-3 text-yellow-500"></i> User
+    </a>
+  </nav>
+</aside>
 
-        {{-- Tampilkan pesan sukses / error --}}
-        @if(session('success'))
-            <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
-                {{ session('success') }}
+<!-- MAIN CONTENT -->
+<div class="flex-1 flex flex-col overflow-hidden">
+  <!-- HEADER -->
+  <header class="flex justify-between items-center px-8 py-5  bg-white border-b border-grey-200">
+    <h1 class="text-2xl font-semibold text-gray-700 flex items-center gap-2">
+      <i data-feather="book-open" class="text-yellow-600"></i> Edit Menu: {{ $menu->nama }}
+    </h1>
+    <a href="{{ route('admin.menu.index') }}"
+       class="inline-flex items-center gap-2 px-5 py-2 bg-yellow-600 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-700 transition">
+      <i data-feather="arrow-left" class="w-4 h-4"></i> Kembali
+    </a>
+  </header>
+
+  <!-- CONTENT -->
+  <main class="flex-1 p-8 bg-gray-50 overflow-y-auto">
+    <div class="max-w-3xl mx-auto p-8 bg-yellow-50 rounded-2xl shadow-lg shadow-yellow-200 border border-yellow-300">
+      <h2 class="text-3xl font-bold text-yellow-600 mb-8 text-center flex items-center justify-center gap-2">
+        <i data-feather="edit" class="w-6 h-6 text-yellow-600"></i> Edit Menu
+      </h2>
+
+      @if(session('success'))
+        <div class="mb-4 p-3 bg-green-100 text-green-800 rounded">
+          {{ session('success') }}
+        </div>
+      @endif
+
+      @if($errors->any())
+        <div class="mb-4 p-3 bg-red-100 text-red-800 rounded">
+          <ul class="list-disc pl-5">
+            @foreach($errors->all() as $err)
+              <li>{{ $err }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
+      <form action="{{ route('admin.menu.update', $menu->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+        @csrf
+        @method('PUT')
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- Nama Menu -->
+          <div>
+            <label for="nama" class="block text-sm font-medium text-gray-700 mb-1">Nama Menu</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i data-feather="tag" class="w-5 h-5 text-yellow-500"></i>
+              </span>
+              <input type="text" name="nama" id="nama" value="{{ old('nama', $menu->nama) }}" required
+                     class="pl-10 pr-4 py-3 w-full bg-yellow-50 border border-yellow-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition">
             </div>
-        @endif
+          </div>
 
-        @if($errors->any())
-            <div class="mb-4 p-3 bg-red-100 text-red-800 rounded">
-                <ul class="list-disc pl-5">
-                    @foreach($errors->all() as $err)
-                        <li>{{ $err }}</li>
-                    @endforeach
-                </ul>
+          <!-- Harga -->
+          <div>
+            <label for="harga" class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i data-feather="dollar-sign" class="w-5 h-5 text-yellow-500"></i>
+              </span>
+              <input type="number" name="harga" id="harga" value="{{ old('harga', $menu->harga) }}" required
+                     class="pl-10 pr-4 py-3 w-full bg-yellow-50 border border-yellow-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition">
             </div>
-        @endif
+          </div>
+        </div>
 
-        <form action="{{ route('admin.menu.update', $menu->id) }}"
-              method="POST"
-              enctype="multipart/form-data"
-              class="space-y-4">
-            @csrf
-            @method('PUT')
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <!-- Kategori -->
+          <div>
+            <label for="kategori" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i data-feather="box" class="w-5 h-5 text-yellow-500"></i>
+              </span>
+              <input type="text" name="kategori" id="kategori" value="{{ old('kategori', $menu->kategori) }}" required
+                     class="pl-10 pr-4 py-3 w-full bg-yellow-50 border border-yellow-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition">
+            </div>
+          </div>
 
-            {{-- Nama --}}
-            <div>
-                <label for="nama" class="block font-medium">Nama Menu</label>
-                <input
-                    type="text"
-                    id="nama"
-                    name="nama"
-                    value="{{ old('nama', $menu->nama) }}"
-                    class="mt-1 block w-full border-gray-300 rounded"
-                    required>
+          <!-- Deskripsi -->
+          <div>
+            <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                <i data-feather="file-text" class="w-5 h-5 text-yellow-500"></i>
+              </span>
+              <textarea name="deskripsi" id="deskripsi" rows="4"
+                        class="pl-10 pr-4 py-3 w-full bg-yellow-50 border border-yellow-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 transition">{{ old('deskripsi', $menu->deskripsi) }}</textarea>
             </div>
+          </div>
+        </div>
 
-            {{-- Harga --}}
-            <div>
-                <label for="harga" class="block font-medium">Harga (Rp)</label>
-                <input
-                    type="number"
-                    id="harga"
-                    name="harga"
-                    value="{{ old('harga', $menu->harga) }}"
-                    class="mt-1 block w-full border-gray-300 rounded"
-                    min="0"
-                    required>
-            </div>
+        <!-- Gambar -->
+        <div>
+          <label for="gambar" class="block text-sm font-medium text-gray-700 mb-1">Gambar Menu</label>
+          <input type="file" name="gambar" id="gambar" accept=".jpg,.jpeg,.png"
+                 class="mt-2 block w-full text-sm bg-yellow-50 border border-yellow-300 p-4 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500">
+          <p class="text-sm text-gray-500 mt-2">Maks: 2MB. Format: JPG, JPEG, PNG.</p>
+        </div>
 
-            {{-- Kategori --}}
-            <div>
-                <label for="kategori" class="block font-medium">Kategori</label>
-                <input
-                    type="text"
-                    id="kategori"
-                    name="kategori"
-                    value="{{ old('kategori', $menu->kategori) }}"
-                    class="mt-1 block w-full border-gray-300 rounded"
-                    required>
-            </div>
-
-            {{-- Deskripsi --}}
-            <div>
-                <label for="deskripsi" class="block font-medium">Deskripsi</label>
-                <textarea
-                    id="deskripsi"
-                    name="deskripsi"
-                    class="mt-1 block w-full border-gray-300 rounded"
-                    rows="4">{{ old('deskripsi', $menu->deskripsi) }}</textarea>
-            </div>
-
-            {{-- Gambar --}}
-            <div>
-                <label class="block font-medium">Gambar saat ini</label>
-                @if($menu->gambar)
-                    <img
-                        src="{{ asset('menu/'.$menu->gambar) }}"
-                        alt="Gambar {{ $menu->nama }}"
-                        class="mb-2 w-32 h-32 object-cover rounded">
-                @else
-                    <p class="text-gray-500 italic">Belum ada gambar</p>
-                @endif
-            </div>
-            <div>
-                <label for="gambar" class="block font-medium">Upload Gambar Baru (opsional)</label>
-                <input
-                    type="file"
-                    id="gambar"
-                    name="gambar"
-                    accept=".jpg,.jpeg,.png"
-                    class="mt-1 block w-full">
-                <p class="text-sm text-gray-500">Maks: 2MB. Format: JPG, JPEG, PNG.</p>
-            </div>
-
-            {{-- Tombol Submit --}}
-            <div class="flex items-center space-x-4">
-                <button
-                    type="submit"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    Simpan Perubahan
-                </button>
-                <a
-                    href="{{ route('admin.menu.index') }}"
-                    class="text-gray-600 hover:underline">
-                    &larr; Kembali ke Daftar Menu
-                </a>
-            </div>
-        </form>
+        <!-- Submit Button -->
+        <div class="mt-10">
+          <button type="submit"
+                  class="w-full flex items-center justify-center bg-yellow-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-yellow-700 transition shadow-md">
+            <i data-feather="save" class="w-5 h-5 mr-2"></i> Simpan Perubahan
+          </button>
+        </div>
+      </form>
     </div>
+  </main>
+</div>
+
+<script>feather.replace()</script>
 </body>
 </html>
