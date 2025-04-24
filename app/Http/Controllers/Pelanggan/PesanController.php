@@ -18,69 +18,134 @@ use App\Http\Controllers\Controller;
 class PesanController extends Controller
 {
     // app/Http/Controllers/Pelanggan/PesanController.php
-public function index($nomor_meja)
+    public function index($nomor_meja)
+    {
+        $meja = Meja::where('nomor', $nomor_meja)->firstOrFail();
+        $menu = Menu::all();
+    
+        // Ambil isi keranjang dan hitung jumlah + total
+        $keranjangItems = Keranjang::with('menu')
+            ->where('meja_id', $meja->id)
+            ->get();
+    
+        $cartCount = $keranjangItems->sum('jumlah');
+        $cartTotal = $keranjangItems->sum(fn($i) => $i->jumlah * $i->menu->harga);
+    
+        // Cek order pending
+        $orderPending = Order::with('orderDetails')
+            ->where('meja_id', $meja->id)
+            ->where('status', 'pending')
+            ->first();
+    
+        // HITUNG TAGIHAN SEBELUMNYA
+        $previousTotal = 0;
+        if ($orderPending) {
+            $previousTotal = $orderPending->orderDetails
+                ->sum(fn($d) => $d->quantity * $d->price);
+        }
+    
+        return view('pelanggan.pesan', compact(
+            'meja', 'menu',
+            'keranjangItems', 'cartCount', 'cartTotal',
+            'orderPending', 'previousTotal'    // <-- kirim ke view
+        ));
+    }
+    
+
+
+public function addToKeranjang(Request $request)
 {
-    $meja = Meja::where('nomor', $nomor_meja)->firstOrFail();
-    $menu = Menu::all();
+    $request->validate([
+        'id'         => 'required|exists:menu,id',
+        'nomor_meja' => 'required|exists:meja,nomor',
+    ]);
 
-    // Ambil isi keranjang dan hitung total item + total harga
-    $keranjangItems = Keranjang::with('menu')
-        ->where('meja_id', $meja->id)
-        ->get();
+    $meja = Meja::where('nomor', $request->nomor_meja)->firstOrFail();
 
-    $cartCount = $keranjangItems->sum('jumlah');
-    $cartTotal = $keranjangItems->sum(function($item) {
-        return $item->jumlah * $item->menu->harga;
-    });
+    $existing = Keranjang::where('meja_id', $meja->id)
+        ->where('menu_id', $request->id)
+        ->first();
 
-    // Cek order pending untuk meja ini
-    $orderPending = Order::where('meja_id', $meja->id)
-                         ->where('status', 'pending')
-                         ->first();
+    if ($existing) {
+        $existing->increment('jumlah', 1);
+    } else {
+        Keranjang::create([
+            'meja_id' => $meja->id,
+            'menu_id' => $request->id,
+            'jumlah'  => 1, // default 1
+        ]);
+    }
 
-    return view('pelanggan.pesan', compact(
-        'meja', 'menu',
-        'keranjangItems', 'cartCount', 'cartTotal',
-        'orderPending'
-    ));
+    return redirect()->back()->with('success', 'Berhasil ditambahkan ke keranjang.');
+}
+
+public function tambahJumlah($menu_id, Request $request)
+{
+    $meja = Meja::where('nomor', $request->nomor_meja)->firstOrFail();
+
+    $keranjang = Keranjang::where('meja_id', $meja->id)
+                          ->where('menu_id', $menu_id)
+                          ->first();
+
+    if ($keranjang) {
+        $keranjang->increment('jumlah');
+    }
+
+    return back();
+}
+
+public function kurangJumlah($menu_id, Request $request)
+{
+    $meja = Meja::where('nomor', $request->nomor_meja)->firstOrFail();
+
+    $keranjang = Keranjang::where('meja_id', $meja->id)
+                          ->where('menu_id', $menu_id)
+                          ->first();
+
+    if ($keranjang) {
+        if ($keranjang->jumlah > 1) {
+            $keranjang->decrement('jumlah');
+        } else {
+            $keranjang->delete(); // kalau tinggal 1, langsung hapus
+        }
+    }
+
+    return back();
 }
 
 
-    public function addToKeranjang(Request $request)
-    {
-        $request->validate([
-            'id'           => 'required|exists:menu,id',
-            'quantity'     => 'required|integer|min:1',
-            'nomor_meja'   => 'required|exists:meja,nomor',
-        ]);
 
-        $meja = Meja::where('nomor', $request->nomor_meja)->firstOrFail();
-
-        $existing = Keranjang::where('meja_id', $meja->id)
-            ->where('menu_id', $request->id)
-            ->first();
-
-        if ($existing) {
-            $existing->increment('jumlah', $request->quantity);
-        } else {
-            Keranjang::create([
-                'meja_id' => $meja->id,
-                'menu_id' => $request->id,
-                'jumlah'  => $request->quantity,
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Berhasil ditambahkan ke keranjang.');
-    }
-
-    public function keranjang($nomor_meja)
+public function keranjang($nomor_meja)
 {
     $meja = Meja::where('nomor', $nomor_meja)->firstOrFail();
-    $keranjang = Keranjang::with('menu')->where('meja_id', $meja->id)->get();
-    // Mencari order pending untuk meja tersebut (jika ada)
-    $order = Order::where('meja_id', $meja->id)->where('status', 'pending')->first();
-    
-    return view('pelanggan.keranjang', compact('meja', 'keranjang', 'order'));
+
+    // Ambil isi keranjang
+    $keranjang = Keranjang::with('menu')
+                   ->where('meja_id', $meja->id)
+                   ->get();
+
+    // Cari order pending untuk meja tersebut
+    $order = Order::with('orderDetails.menu')
+                  ->where('meja_id', $meja->id)
+                  ->where('status', 'pending')
+                  ->first();
+
+    // Hitung total tagihan sebelumnya (orderDetails di order pending, 
+    // tanpa keranjang yang belum dikonfirmasi)
+    $previousTotal = 0;
+    if ($order) {
+        $previousTotal = $order->orderDetails
+            ->sum(function($detail) {
+                return $detail->quantity * $detail->price;
+            });
+    }
+
+    return view('pelanggan.keranjang', compact(
+        'meja',
+        'keranjang',
+        'order',
+        'previousTotal'   // <-- kirim variabel ini ke view
+    ));
 }
 
 
@@ -203,20 +268,28 @@ public function closeBill(Request $request)
 
     public function showTransaksi($order_id)
 {
-    // Ambil order beserta detail & relasi meja
-    $order = Order::with('orderDetails.menu', 'meja')->findOrFail($order_id);
+    $order = Order::with('orderDetails.menu', 'meja')
+                  ->findOrFail($order_id);
 
-    // Cek apakah Transaksi untuk order ini sudah dibuat
-    $transaksi = Transaksi::where('order_id', $order_id)->first();
-
-    if ($transaksi) {
-        // Sudah bayar → tampilkan kode pembayaran
+    if ($transaksi = Transaksi::where('order_id', $order_id)->first()) {
         return view('transaksi.show', compact('transaksi'));
     }
 
-    // Belum bayar → tampilkan form create
-    return view('transaksi.create', compact('order'));
+    $subTotal      = $order->orderDetails->sum(fn($d) => $d->quantity * $d->price);
+    $serviceCharge = round($subTotal * 0.05);
+    $pb1           = round($subTotal * 0.10);
+    $grandTotal    = $subTotal + $serviceCharge + $pb1;
+    $roundedTotal  = floor($grandTotal / 500) * 500;
+    $roundingAmount = $grandTotal - $roundedTotal;
+    $menuCount     = $order->orderDetails->count();
+
+    return view('transaksi.create', compact(
+        'order', 'subTotal', 'serviceCharge', 'pb1',
+        'grandTotal', 'roundedTotal', 'roundingAmount', 'menuCount'
+    ));
 }
+
+
 
 
 public function storeTransaksi(Request $request)

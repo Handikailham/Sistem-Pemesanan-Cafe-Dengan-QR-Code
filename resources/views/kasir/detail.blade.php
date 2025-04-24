@@ -1,53 +1,78 @@
+<!-- resources/views/kasir/detail.blade.php -->
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
+    <meta charset="UTF-8">
     <title>Detail Transaksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: sans-serif; padding: 20px; }
-        .box { max-width: 600px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        input, button { width: 100%; padding: 10px; margin-top: 10px; }
+        html, body { height: 100%; margin: 0; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>Detail Transaksi</h2>
+    <div 
+        class="min-h-screen bg-cover bg-center flex items-center justify-center px-4"
+        style="background-image: url('{{ asset('images/geolig.jpg') }}');"
+    >
+        <div class="max-w-3xl bg-white bg-opacity-90 shadow-xl rounded-xl p-6 w-full">
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">🧾 Detail Transaksi</h2>
 
-        <p><strong>Nama:</strong> {{ $transaksi->nama }}</p>
-        <p><strong>No HP:</strong> {{ $transaksi->no_hp }}</p>
-        <p><strong>No Meja:</strong> {{ $transaksi->order->meja->nomor ?? '-' }}</p>
+            <div class="mb-6 space-y-2 text-gray-700">
+                <p><strong>No Meja:</strong> {{ $transaksi->order->meja->nomor ?? '-' }}</p>
+            </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Menu</th>
-                    <th>Qty</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $total = 0; @endphp
-                @foreach ($transaksi->order->orderDetails as $item)
-                    @php $subtotal = $item->quantity * $item->price; $total += $subtotal; @endphp
-                    <tr>
-                        <td>{{ $item->menu->nama }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-                <tr>
-                    <th colspan="2">Total</th>
-                    <th>Rp {{ number_format($total, 0, ',', '.') }}</th>
-                </tr>
-            </tbody>
-        </table>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border border-gray-300 rounded">
+                    <thead class="bg-yellow-100 text-gray-800">
+                        <tr>
+                            <th class="px-4 py-2 border">Menu</th>
+                            <th class="px-4 py-2 border">Qty</th>
+                            <th class="px-4 py-2 border">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        @php $total=0; @endphp
+                        @foreach ($transaksi->order->orderDetails as $item)
+                            @php $subtotal = $item->quantity * $item->price; $total += $subtotal; @endphp
+                            <tr>
+                                <td class="px-4 py-2 border">{{ $item->menu->nama }}</td>
+                                <td class="px-4 py-2 border">{{ $item->quantity }}</td>
+                                <td class="px-4 py-2 border">Rp {{ number_format($subtotal,0,',','.') }}</td>
+                            </tr>
+                        @endforeach
+                        <tr>
+                            <td colspan="2" class="px-4 py-2 border text-right">Subtotal</td>
+                            <td class="px-4 py-2 border">Rp {{ number_format($subTotal,0,',','.') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="px-4 py-2 border text-right">Service Charge (5%)</td>
+                            <td class="px-4 py-2 border">Rp {{ number_format($serviceCharge,0,',','.') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="px-4 py-2 border text-right">PB1 (10%)</td>
+                            <td class="px-4 py-2 border">Rp {{ number_format($pb1,0,',','.') }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="px-4 py-2 border text-right">Pembulatan</td>
+                            <td class="px-4 py-2 border">Rp -{{ number_format($roundingAmount,0,',','.') }}</td>
+                        </tr>
+                        <tr class="bg-yellow-100 font-semibold">
+                            <td colspan="2" class="px-4 py-2 border text-right">Total Akhir</td>
+                            <td class="px-4 py-2 border">Rp {{ number_format($roundedTotal,0,',','.') }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-        <form action="{{ route('kasir.bayar', $transaksi->id) }}" method="POST">
-            @csrf
-            <input type="number" name="jumlah_dibayar" placeholder="Masukkan jumlah dibayar" required>
-            <button type="submit">Bayar</button>
-        </form>
+            <form action="{{ route('kasir.bayar', $transaksi->id) }}" method="POST" class="mt-6 space-y-3">
+                @csrf
+                <input type="number" name="jumlah_dibayar" placeholder="Masukkan jumlah dibayar" required
+                       class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+                <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded">
+                    💵 Bayar
+                </button>
+            </form>
+        </div>
     </div>
 </body>
 </html>

@@ -80,6 +80,10 @@ Route::post('/keranjang/update/{id}', [PesanController::class, 'updateKeranjang'
 // routes/web.php
 Route::post('/keranjang/remove/{id}', [PesanController::class, 'remove'])->name('keranjang.remove');
 
+Route::post('/keranjang/tambah-jumlah/{menu_id}', [PesanController::class, 'tambahJumlah'])->name('keranjang.tambahJumlah');
+Route::post('/keranjang/kurang-jumlah/{menu_id}', [PesanController::class, 'kurangJumlah'])->name('keranjang.kurangJumlah');
+
+
 
 // route untuk status pesanan
 
