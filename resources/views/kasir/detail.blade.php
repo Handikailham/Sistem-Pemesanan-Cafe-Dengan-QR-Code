@@ -6,7 +6,9 @@
     <title>Detail Transaksi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+
         html, body { height: 100%; margin: 0; }
+
     </style>
 </head>
 <body>
@@ -68,6 +70,7 @@
                 @csrf
                 <input type="number" name="jumlah_dibayar" placeholder="Masukkan jumlah dibayar" required
                        class="w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
+
                 <button type="submit" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 rounded">
                     💵 Bayar
                 </button>
