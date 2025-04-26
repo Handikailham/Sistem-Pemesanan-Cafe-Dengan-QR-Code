@@ -11,6 +11,11 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Pelanggan\PesanController;
 use App\Http\Controllers\Admin\AdminTransaksiController;
 
+// Route untuk halaman welcome
+Route::get('/welcome', function () {
+    return view('welcome');
+});
+
 // Route untuk login
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);

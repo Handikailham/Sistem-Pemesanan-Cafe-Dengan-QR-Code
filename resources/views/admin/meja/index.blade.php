@@ -9,16 +9,23 @@
 </head>
 <body class="flex h-screen bg-yellow-50 text-gray-800 font-sans">
 
-  <!-- SIDEBAR -->
-  <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
+   <!-- SIDEBAR -->
+   <aside class="w-64 bg-white border-r border-gray-200 flex flex-col">
     <div class="p-6 flex items-center space-x-2 border-b">
       <img src="{{ asset('images/scanbrewcafe.png') }}" alt="Logo" class="w-10 h-10">
       <span class="text-xl font-bold text-yellow-500">ScanBrew Café</span>
     </div>
     <nav class="flex-1 px-4 py-6 space-y-2">
+      <!-- Dashboard -->
+      <a href="{{ route('admin.dashboard') }}"
+         class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg text-gray-700">
+        <i data-feather="home" class="w-5 h-5 mr-3 text-yellow-500"></i> Dashboard
+      </a>
+      <!-- Meja -->
       <a href="{{ route('admin.meja.index') }}" class="flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg font-medium">
         <i data-feather="grid" class="w-5 h-5 mr-3"></i> Meja
       </a>
+      <!-- ... menu lainnya ... -->
       <a href="{{ route('admin.menu.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
         <i data-feather="book-open" class="w-5 h-5 mr-3 text-yellow-500"></i> Menu
       </a>
@@ -30,6 +37,7 @@
       </a>
     </nav>
   </aside>
+
 
   <!-- MAIN CONTENT -->
   <div class="flex-1 flex flex-col overflow-hidden">

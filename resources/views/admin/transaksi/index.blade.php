@@ -9,47 +9,57 @@
 </head>
 <body class="flex h-screen bg-yellow-50 text-gray-800 font-sans">
 
-  <!-- SIDEBAR -->
-<aside class="w-64 bg-white border-r border-grey-200 flex flex-col">
-    <div class="p-6 flex items-center space-x-2 border-b border-grey-200">
-      <img src="{{ asset('images/scanbrewcafe.png') }}" alt="Logo" class="w-10 h-10">
-      <span class="text-xl font-bold text-yellow-600">ScanBrew Café</span>
-    </div>
-    <nav class="flex-1 px-4 py-6 space-y-2">
-      <a href="{{ route('admin.meja.index') }}"
-         class="flex items-center px-4 py-2 rounded-lg 
-                {{ request()->routeIs('admin.meja.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
-        <i data-feather="grid" 
-           class="w-5 h-5 mr-3 
-                  {{ request()->routeIs('admin.meja.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
-        Meja
-      </a>
-      <a href="{{ route('admin.menu.index') }}"
-         class="flex items-center px-4 py-2 rounded-lg 
-                {{ request()->routeIs('admin.menu.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
-        <i data-feather="menu" 
-           class="w-5 h-5 mr-3 
-                  {{ request()->routeIs('admin.menu.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
-        Menu
-      </a>
-      <a href="{{ route('admin.transaksi.index') }}"
-         class="flex items-center px-4 py-2 rounded-lg 
-                {{ request()->routeIs('admin.transaksi.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
-        <i data-feather="clipboard" 
-           class="w-5 h-5 mr-3 
-                  {{ request()->routeIs('admin.transaksi.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
-        Transaksi
-      </a>
-      <a href="{{ route('admin.user.index') }}"
-         class="flex items-center px-4 py-2 rounded-lg 
-                {{ request()->routeIs('admin.user.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
-        <i data-feather="users" 
-           class="w-5 h-5 mr-3 
-                  {{ request()->routeIs('admin.user.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
-        User
-      </a>
-    </nav>
-  </aside>
+ <!-- SIDEBAR -->
+ <aside class="w-64 bg-white border-r border-grey-200 flex flex-col">
+  <div class="p-6 flex items-center space-x-2 border-b border-grey-200">
+    <img src="{{ asset('images/scanbrewcafe.png') }}" alt="Logo" class="w-10 h-10">
+    <span class="text-xl font-bold text-yellow-600">ScanBrew Café</span>
+  </div>
+  <nav class="flex-1 px-4 py-6 space-y-2">
+    <!-- Dashboard -->
+    <a href="{{ route('admin.dashboard') }}"
+       class="flex items-center px-4 py-2 rounded-lg hover:bg-yellow-100 text-gray-800">
+      <i data-feather="home" class="w-5 h-5 mr-3 text-yellow-500"></i>
+      Dashboard
+    </a>
+    <!-- Meja -->
+    <a href="{{ route('admin.meja.index') }}"
+       class="flex items-center px-4 py-2 rounded-lg 
+              {{ request()->routeIs('admin.meja.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
+      <i data-feather="grid" 
+         class="w-5 h-5 mr-3 
+                {{ request()->routeIs('admin.meja.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
+      Meja
+    </a>
+    <!-- Menu -->
+    <a href="{{ route('admin.menu.index') }}"
+       class="flex items-center px-4 py-2 rounded-lg 
+              {{ request()->routeIs('admin.menu.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
+      <i data-feather="book-open" 
+         class="w-5 h-5 mr-3 
+                {{ request()->routeIs('admin.menu.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
+      Menu
+    </a>
+    <!-- Transaksi -->
+    <a href="{{ route('admin.transaksi.index') }}"
+       class="flex items-center px-4 py-2 rounded-lg 
+              {{ request()->routeIs('admin.transaksi.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
+      <i data-feather="clipboard" 
+         class="w-5 h-5 mr-3 
+                {{ request()->routeIs('admin.transaksi.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
+      Transaksi
+    </a>
+    <!-- User -->
+    <a href="{{ route('admin.user.index') }}"
+       class="flex items-center px-4 py-2 rounded-lg 
+              {{ request()->routeIs('admin.user.*') ? 'bg-yellow-500 text-white font-semibold' : 'hover:bg-yellow-100 text-gray-800' }}">
+      <i data-feather="users" 
+         class="w-5 h-5 mr-3 
+                {{ request()->routeIs('admin.user.*') ? 'text-white' : 'text-yellow-500' }}"></i> 
+      User
+    </a>
+  </nav>
+</aside>
   
   <!-- MAIN CONTENT -->
   <div class="flex-1 flex flex-col overflow-hidden">

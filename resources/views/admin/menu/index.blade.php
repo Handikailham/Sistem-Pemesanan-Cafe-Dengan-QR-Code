@@ -16,20 +16,39 @@
       <span class="text-xl font-bold text-yellow-500">ScanBrew Café</span>
     </div>
     <nav class="flex-1 px-4 py-6 space-y-2">
-      <a href="{{ route('admin.meja.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
-        <i data-feather="grid" class="w-5 h-5 mr-3 text-yellow-500"></i> Meja
+      <!-- Dashboard -->
+      <a href="{{ route('admin.dashboard') }}"
+         class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg text-gray-700">
+        <i data-feather="home" class="w-5 h-5 mr-3 text-yellow-500"></i>
+        <span>Dashboard</span>
       </a>
-      <a href="{{ route('admin.menu.index') }}" class="flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg font-medium">
-        <i data-feather="book-open" class="w-5 h-5 mr-3"></i> Menu
+      <!-- Meja -->
+      <a href="{{ route('admin.meja.index') }}"
+         class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
+        <i data-feather="grid" class="w-5 h-5 mr-3 text-yellow-500"></i>
+        <span class="text-gray-700">Meja</span>
       </a>
-      <a href="{{ route('admin.transaksi.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
-        <i data-feather="clipboard" class="w-5 h-5 mr-3 text-yellow-500"></i> Transaksi
+      <!-- Menu (active) -->
+      <a href="{{ route('admin.menu.index') }}"
+         class="flex items-center px-4 py-2 bg-yellow-500 rounded-lg font-medium">
+        <i data-feather="book-open" class="w-5 h-5 mr-3 text-white"></i>
+        <span class="text-white">Menu</span>
       </a>
-      <a href="{{ route('admin.user.index') }}" class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
-        <i data-feather="users" class="w-5 h-5 mr-3 text-yellow-500"></i> User
+      <!-- Transaksi -->
+      <a href="{{ route('admin.transaksi.index') }}"
+         class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
+        <i data-feather="clipboard" class="w-5 h-5 mr-3 text-yellow-500"></i>
+        <span class="text-gray-700">Transaksi</span>
+      </a>
+      <!-- User -->
+      <a href="{{ route('admin.user.index') }}"
+         class="flex items-center px-4 py-2 hover:bg-yellow-100 rounded-lg">
+        <i data-feather="users" class="w-5 h-5 mr-3 text-yellow-500"></i>
+        <span class="text-gray-700">User</span>
       </a>
     </nav>
   </aside>
+
 
   <!-- MAIN CONTENT -->
   <div class="flex-1 flex flex-col overflow-hidden">
