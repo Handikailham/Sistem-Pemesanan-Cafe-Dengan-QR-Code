@@ -297,14 +297,17 @@ public function storeTransaksi(Request $request)
     $data = $request->validate([
         'order_id'          => 'required|exists:orders,id',
         'metode_pembayaran' => 'required|in:online,kasir',
+        'total_transaksi'   => 'required|numeric|min:0',
     ]);
 
-    // Generate dan simpan
-    $data['kode_pembayaran']   = strtoupper(Str::random(8));
-    $data['status']            = 'belum_bayar';
+    // Generate kode pembayaran
+    $data['kode_pembayaran'] = strtoupper(Str::random(8));
+    $data['status']          = 'belum_bayar';
+
+    // Simpan transaksi berikut totalnya
     $transaksi = Transaksi::create($data);
 
-    // Redirect ke GET /transaksi/{order_id}
+    // Redirect ke halaman detail transaksi
     return redirect()->route('pesan.transaksi', ['order_id' => $data['order_id']]);
 }
 

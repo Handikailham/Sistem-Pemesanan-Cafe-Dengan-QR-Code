@@ -17,6 +17,7 @@ class Transaksi extends Model
         'metode_pembayaran',
         'kode_pembayaran',
         'status',
+        'total_transaksi',
         'jumlah_bayar',
         'kembalian',
         'kasir_id',

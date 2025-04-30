@@ -124,6 +124,7 @@
       @csrf
       <input type="hidden" name="order_id" value="{{ $order->id }}">
       <input type="hidden" name="metode_pembayaran" :value="method">
+      <input type="hidden" name="total_transaksi" value="{{ $roundedTotal }}">
       <div class="h-32"></div>
       <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg px-6 py-4 flex items-center justify-between z-40">
         <div><p class="text-sm text-gray-500">Total Pembayaran</p><p class="text-xl font-bold text-gray-900">Rp {{ number_format($roundedTotal,0,',','.') }}</p></div>

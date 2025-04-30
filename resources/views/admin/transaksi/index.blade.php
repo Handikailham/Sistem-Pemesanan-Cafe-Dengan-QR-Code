@@ -97,7 +97,7 @@
               <td class="px-6 py-4">{{ $item->id }}</td>
               <td class="px-6 py-4">{{ $item->kode_pembayaran }}</td>
               <td class="px-6 py-4">{{ $item->order->meja->nomor ?? '-' }}</td>
-              <td class="px-6 py-4">Rp {{ number_format($item->order->total(), 0, ',', '.') }}</td>
+              <td class="px-6 py-4">Rp {{ number_format($item->total_transaksi, 0, ',', '.') }}</td>
               <td class="px-6 py-4">{{ ucfirst($item->status) }}</td>
               <td class="px-6 py-4">{{ $item->created_at->format('d-m-Y H:i') }}</td>
             </tr>
