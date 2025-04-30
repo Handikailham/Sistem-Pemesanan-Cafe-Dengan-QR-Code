@@ -12,7 +12,7 @@ use App\Http\Controllers\Pelanggan\PesanController;
 use App\Http\Controllers\Admin\AdminTransaksiController;
 
 // Route untuk halaman welcome
-Route::get('/welcome', function () {
+Route::get('/', function () {
     return view('welcome');
 });
 
@@ -20,7 +20,6 @@ Route::get('/welcome', function () {
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Route untuk logout
 
@@ -53,13 +52,38 @@ Route::get('transaksi', [AdminTransaksiController::class, 'index'])->name('trans
 
 });
 
+// kasir
+//––––––– KASIR ROUTES –––––––
+Route::middleware(['auth', 'check.admin'])
+     ->prefix('kasir')
+     ->name('kasir.')
+     ->group(function () {
+         
+    // Halaman utama kasir (list/meja/search)
+    Route::get('/', [KasirController::class, 'index'])
+         ->name('index');
+    Route::post('/', [KasirController::class, 'cari'])
+         ->name('cari');
+    
+    // Bayar transaksi
+    Route::post('/bayar/{id}', [KasirController::class, 'bayar'])
+         ->name('bayar');
+});
 
-
-
-Route::get('/dapur', [DapurController::class, 'index'])->name('dapur.index');
-Route::delete('/dapur/proses/{nomorMeja}', [DapurController::class, 'prosesMeja'])->name('dapur.prosesMeja');
-
-Route::put('/dapur/update/{id}', [DapurController::class, 'updateStatus'])->name('dapur.updateStatus');
+//––––––– DAPUR ROUTES –––––––
+Route::middleware(['auth', 'check.admin'])
+     ->prefix('dapur')
+     ->name('dapur.')
+     ->group(function () {
+         
+    // Halaman utama dapur (daftar pesanan)
+    Route::get('/', [DapurController::class, 'index'])
+         ->name('index');
+    
+    // Proses/meja selesai
+    Route::delete('/proses/{nomorMeja}', [DapurController::class, 'prosesMeja'])->name('prosesMeja');
+    Route::put('/update/{id}', [DapurController::class, 'updateStatus'])->name('updateStatus');
+});
 
 
 
@@ -101,10 +125,6 @@ Route::get('/transaksi/{order_id}', [PesanController::class, 'showTransaksi'])->
 Route::get('/transaksi/create/{order_id}', [PesanController::class, 'showTransaksi'])->name('transaksi.create');
 Route::post('/transaksi/store', [PesanController::class, 'storeTransaksi'])->name('pesan.transaksi.store');
 
-// kasir
-Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
-Route::post('/kasir', [KasirController::class, 'cari'])->name('kasir.cari');
-Route::post('/kasir/bayar/{id}', [KasirController::class, 'bayar'])->name('kasir.bayar');
 
 
 

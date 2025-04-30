@@ -32,7 +32,7 @@ class LoginController extends Controller
         
             switch ($user->role) {
                 case 'admin':
-                    return redirect('/admin/meja');
+                    return redirect('/admin');
                 case 'kasir':
                     return redirect('/kasir');
                 case 'dapur':

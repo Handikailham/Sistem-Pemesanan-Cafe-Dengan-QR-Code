@@ -10,23 +10,39 @@ class CheckAdmin
 {
     public function handle(Request $request, Closure $next)
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect('/login')->with('error', 'Silakan login terlebih dahulu.');
         }
 
         $user = Auth::user();
+        $path = $request->path();  // misal "dapur/orders"
 
-        if ($user->role !== 'admin') {
-            switch ($user->role) {
-                case 'kasir':
-                    return redirect('/kasir')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
-                case 'dapur':
-                    return redirect('/dapur')->with('error', 'Anda tidak memiliki akses ke halaman admin.');
-                default:
-                    return redirect('/')->with('error', 'Role tidak dikenali.');
-            }
+        switch ($user->role) {
+            case 'admin':
+                // admin boleh akses di mana saja
+                return $next($request);
+
+            case 'kasir':
+                // kalau URL-nya di prefix "kasir", lanjut
+                if ($request->is('kasir*')) {
+                    return $next($request);
+                }
+                // selain itu, redirect ke dashboard kasir
+                return redirect()->route('kasir.index')
+                                 ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+
+            case 'dapur':
+                // kalau URL-nya di prefix "dapur", lanjut
+                if ($request->is('dapur*')) {
+                    return $next($request);
+                }
+                // selain itu, redirect ke dashboard dapur
+                return redirect()->route('dapur.index')
+                                 ->with('error', 'Anda tidak memiliki akses ke halaman ini.');
+
+            default:
+                // role lain sama sekali nggak boleh
+                abort(403, 'Role tidak dikenali.');
         }
-
-        return $next($request);
     }
 }
